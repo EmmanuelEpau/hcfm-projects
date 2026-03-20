@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Emmanuel Epau — Projects for Infinity</title>
+<style>
+  :root {
+    --navy: #1B3A5C;
+    --gold: #C68A2E;
+    --light-gold: #FFF8E7;
+    --white: #FFFFFF;
+    --bg: #F8F9FA;
+    --border: #E2E8F0;
+    --text: #1A202C;
+    --text-muted: #64748B;
+    --green: #059669;
+    --blue: #2563EB;
+    --amber: #D97706;
+    --red: #DC2626;
+    --purple: #7C3AED;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 0;
+  }
+
+  .header {
+    background: var(--navy);
+    color: white;
+    padding: 32px 40px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+
+  .header h1 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .header .subtitle {
+    font-size: 14px;
+    opacity: 0.8;
+    font-weight: 400;
+  }
+
+  .header .stats {
+    display: flex;
+    gap: 24px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+
+  .header .stat {
+    background: rgba(255,255,255,0.12);
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+
+  .header .stat strong {
+    font-size: 20px;
+    display: block;
+    color: var(--gold);
+  }
+
+  .filter-bar {
+    display: flex;
+    gap: 8px;
+    margin: 20px 40px 0;
+    flex-wrap: wrap;
+  }
+
+  .filter-btn {
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: white;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text-muted);
+  }
+
+  .filter-btn:hover { border-color: var(--navy); color: var(--navy); }
+  .filter-btn.active { background: var(--navy); color: white; border-color: var(--navy); }
+
+  .workspace-section {
+    margin: 28px 40px;
+  }
+
+  .workspace-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .workspace-title .count {
+    background: var(--navy);
+    color: white;
+    font-size: 12px;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-weight: 600;
+  }
+
+  .workspace-desc {
+    color: var(--text-muted);
+    font-size: 13px;
+    margin-bottom: 16px;
+  }
+
+  .board-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+  }
+
+  .board-card:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  }
+
+  .board-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .board-name {
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--text);
+  }
+
+  .board-badges {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  .badge-high { background: #FEE2E2; color: var(--red); }
+  .badge-medium { background: #FEF3C7; color: var(--amber); }
+  .badge-low { background: #E0E7FF; color: #4338CA; }
+  .badge-in-progress { background: #DBEAFE; color: var(--blue); }
+  .badge-planned { background: #F3E8FF; color: var(--purple); }
+  .badge-ongoing { background: #D1FAE5; color: var(--green); }
+
+  .copy-btn {
+    font-size: 12px;
+    padding: 4px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: white;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .copy-btn:hover { border-color: var(--navy); color: var(--navy); }
+  .copy-btn.copied { background: var(--green); color: white; border-color: var(--green); }
+
+  .board-body {
+    padding: 16px 20px;
+  }
+
+  .board-body h4 {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    margin-top: 14px;
+  }
+
+  .board-body h4:first-child { margin-top: 0; }
+
+  .board-body p, .board-body .desc-text {
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  .collaborators {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+  }
+
+  .collab-tag {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 2px 10px;
+    border-radius: 14px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .owner-tag {
+    background: var(--light-gold);
+    border: 1px solid var(--gold);
+    color: var(--navy);
+    font-weight: 600;
+  }
+
+  .note-box {
+    background: var(--light-gold);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-top: 14px;
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  .note-box strong {
+    color: var(--navy);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .copy-all-section {
+    margin: 24px 40px;
+    padding: 20px;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    text-align: center;
+  }
+
+  .copy-all-btn {
+    padding: 10px 28px;
+    background: var(--navy);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .copy-all-btn:hover { background: #142d49; }
+
+  .footer {
+    text-align: center;
+    padding: 24px 40px;
+    color: var(--text-muted);
+    font-size: 12px;
+    border-top: 1px solid var(--border);
+    margin-top: 20px;
+  }
+
+  @media (max-width: 640px) {
+    .header, .workspace-section, .filter-bar, .copy-all-section { padding-left: 16px; padding-right: 16px; margin-left: 0; margin-right: 0; }
+    .header { padding: 20px 16px; }
+    .board-header { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Emmanuel Epau — Projects for Infinity</h1>
+  <div class="subtitle">Holy Cross Family Ministries | March 2026</div>
+  <div class="stats">
+    <div class="stat"><strong>11</strong>Projects</div>
+    <div class="stat"><strong>3</strong>Workspaces</div>
+    <div class="stat"><strong>8</strong>Owned</div>
+    <div class="stat"><strong>3</strong>Contributing</div>
+  </div>
+</div>
+
+<div class="filter-bar">
+  <button class="filter-btn active" onclick="filterCards('all')">All</button>
+  <button class="filter-btn" onclick="filterCards('high')">High Priority</button>
+  <button class="filter-btn" onclick="filterCards('medium')">Medium Priority</button>
+  <button class="filter-btn" onclick="filterCards('in-progress')">In Progress</button>
+  <button class="filter-btn" onclick="filterCards('planned')">Planned</button>
+  <button class="filter-btn" onclick="filterCards('ongoing')">Ongoing</button>
+</div>
+
+<!-- ============ HCFM PROJECTS ============ -->
+<div class="workspace-section">
+  <div class="workspace-title">HCFM Projects <span class="count">9 boards</span></div>
+  <div class="workspace-desc">12 members. Organization-wide initiatives spanning analytics, brand, content, and digital infrastructure.</div>
+
+  <!-- 1. Marketing Analytics Infrastructure -->
+  <div class="board-card" data-priority="high" data-status="in-progress">
+    <div class="board-header">
+      <span class="board-name">EMMANUEL: Marketing Analytics Infrastructure</span>
+      <div class="board-badges">
+        <span class="badge badge-high">High</span>
+        <span class="badge badge-in-progress">In Progress</span>
+        <button class="copy-btn" onclick="copyBoard(this)">Copy Board Name</button>
+      </div>
+    </div>
+    <div class="board-body">
+      <h4>Board Description (paste into Infinity)</h4>
+      <p class="desc-text">I am building HCFM's foundational analytics system across 22 Google Analytics 4 properties, 14+ Google Search Console properties, and 6 integrated data platforms (GA4, GSC, YouTube Studio, Sprout Social, Meta Business Suite, HubSpot CRM). The work includes bot traffic remediation, GA4 configuration standardization, a Looker Studio Master Dashboard that consolidates all reporting into one system, a UTM Link Generator that enforces naming conventions across all country teams, standardized report templates, and social listening configuration through Sprout Social. Google Search Console has critical indexing issues across multiple properties that require IT collaboration to resolve. Once I have this system proven and documented in the U.S., it becomes the replicable standard for all 18 HCFM country offices.</p>
+
+      <h4>Collaborators</h4>
+      <div class="collaborators">
+        <span class="collab-tag owner-tag">Owner: Emmanuel Epau</span>
+        <span class="collab-tag">Marketing Team</span>
+        <span class="collab-tag">IT Department</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 2. Brand Guidelines & Visual Identity -->
+  <div class="board-card" data-priority="high" data-status="in-progress">
+    <div class="board-header">
+      <span class="board-name">VICTORIA: Brand Guidelines & Visual Identity</span>
+      <div class="board-badges">
+        <span class="badge badge-high">High</span>
+        <span class="badge badge-in-progress">In Progress</span>
+        <button class="copy-btn" onclick="copyBoard(this)">Copy Board Name</button>
+      </div>
+    </div>
+    <div class="board-body">
+      <h4>Board Description (paste into Infinity)</h4>
+      <p class="desc-text">We are establishing and enforcing consistent brand standards across all 18 HCFM country offices. This covers the full Visual Identity Guidelines system (brand color palettes, typography rules, logo usage, and asset templates), competitor visual analysis of other Catholic organizations, and instructional content showing offices how to apply the guidelines correctly. We are conducting one-on-one social media audits with each country office to assess current adoption, identify specific barriers, and build direct working relationships. We are also pursuing official account verification for Family Rosary, Catholic Mom, and HCFM social accounts that meet follower thresholds.</p>
+
+      <h4>Collaborators</h4>
+      <div class="collaborators">
+        <span class="collab-tag owner-tag">Owner: Victoria Hassan</span>
+        <span class="collab-tag">Emmanuel Epau (contributor)</span>
+      </div>
+
+      <div class="note-box">
+        <strong>Note for Colum</strong>
+        The Visual Identity Guidelines have gone through multiple iterations and have been presented to the team. After two instructional videos, a quick audit of country accounts showed adoption is very slow or nonexistent in many offices. The one-on-one meetings are designed to get to the root cause, whether that is resources, knowledge gaps, or access issues. These meetings also build direct relationships with country staff, which opens the door for broader collaboration. We recently started recording these sessions to scale the process.
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. HCFM Stock Footage & Content Library -->
+  <div class="board-card" data-priority="medium" data-status="planned">
+    <div class="board-header">
+      <span class="board-name">EMMANUEL: HCFM Stock Footage & Content Library</span>
+      <div class="board-badges">
+        <span class="badge badge-medium">Medium</span>
+        <span class="badge badge-planned">Planned</span>
+        <button class="copy-btn" onclick="copyBoard(this)">Copy Board Name</button>
+      </div>
+    </div>
+    <div class="board-body">
+      <h4>Board Description (paste into Infinity)</h4>
+      <p class="desc-text">I am creating an original library of stock video and photography for HCFM marketing, social media, magazines, and YouTube. Includes footage of the Rosary, Eucharistic Adoration (coordinating with IT on chapel lighting), chapel interiors and stained glass, seasonal content, and property photos of the Father Peyton Center and Museum. I am also establishing a process to document employee outreach events so HCFM can market its community services with real images instead of stock. This addresses the recurring problem of duplicating iStock assets and the limited availability of authentic Catholic content in commercial libraries.</p>
+
+      <h4>Collaborators</h4>
+      <div class="collaborators">
+        <span class="collab-tag owner-tag">Owner: Emmanuel Epau</span>
+        <span class="collab-tag">Marketing Team</span>
+        <span class="collab-tag">IT Department</span>
+        <span class="collab-tag">Stephanie</span>
+      </div>
+
+      <div class="note-box">
+        <strong>Note for Colum</strong>
+        The first planning meeting has been held and documented. Some shots will require renting specialty lenses. Stephanie has a separate but related need for property photos to market the Father Peyton Center to school groups. The iStock licensing situation makes original content both a creative and a legal priority. This also covers the idea of sending a photographer or training staff to capture footage when employees go out for events, community services, and school visits.
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Logo Modifications & HCFM Mark Animation -->
+  <div class="board-card" data-priority="medium" data-status="in-progress">
+    <div class="board-header">
+      <span class="board-name">EMMANUEL: Logo Modifications & HCFM Mark Animation</span>
+      <div class="board-badges">
+        <span class="badge badge-medium">Medium</span>
+        <span class="badge badge-in-progress">In Progress</span>
+        <button class="copy-btn" onclick="copyBoard(this)">Copy Board Name</button>
+      </div>
+    </div>
+    <div class="board-body">
+      <h4>Board Description (paste into Infinity)</h4>
+      <p class="desc-text">I am managing logo updates for HCFM subministries and country offices, including translation and design adaptation. Currently finalizing the France office logo with translation support. I am also designing an HCFM acronym logo for contexts where the full name is too long, and developing an animated version of the HCFM mark showing one person praying and others joining to form the full circle, visually representing the mission without words. The Father Peyton Center logo has been completed and needs uploading to SharePoint.</p>
+
+      <h4>Collaborators</h4>
+      <div class="collaborators">
+        <span class="collab-tag owner-tag">Owner: Emmanuel Epau</span>
+        <span class="collab-tag">Colum Devine</span>
+        <span class="collab-tag">Father Richard Serugo</span>
+        <span class="collab-tag">Father Pinto</span>
+        <span class="collab-tag">Margaret</span>
+        <span class="collab-tag">Hong</span>
+      </div>
+
+      <div class="note-box">
+        <strong>Note for Colum</strong>
+        The broader logo modification initiative is paused pending leadership approval. In the meantime, I am completing confirmed individual logos. Father Peyton Center logo is done but still needs to be uploaded to SharePoint so it is available to everyone. The HCFM mark animation was Father Charlie's idea. The acronym logo concept came from observing how effectively SXSW uses their abbreviated branding at the conference.
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Chatbot & Automated Engagement System -->
+  <div class="board-card" data-priority="medium" data-status="planned">
+    <div class="board-header">
+      <span class="board-name">EMMANUEL: Chatbot & Automated Engagement System</span>
+      <div class="board-badges">
+        <span class="badge badge-medium">Medium</span>
+        <span class="badge badge-planned">Planned</span>
+        <button class="copy-btn" onclick="copyBoard(this)">Copy Board Name</button>
+      </div>
+    </div>
+    <div class="board-body">
+      <h4>Board Description (paste into Infinity)</h4>
+      <p class="desc-text">I am designing and deploying AI-powered chatbots for HCFM websites to handle frequently asked questions about rosary requests, shipping, event information, and museum visits. I am also evaluating Sprout Social's built-in tools for managing and automating responses to common social media comments and messages across 46 accounts, with escalation rules to flag messages that require a real person.</p>
+
+      <h4>Collaborators</h4>
+      <div class="collaborators">
+        <span class="collab-tag owner-tag">Owner: Emmanuel Epau</span>
+        <span class="collab-tag">Michael</span>
+        <span class="collab-tag">Amy</span>
+        <span class="collab-tag">Marketing Team</span>
+      </div>
+
+      <div class="note-box">
+        <strong>Note for Colum</strong>
+        Michael raised this need directly. He handles a high volume of repetitive emails with straightforward answers that could be automated. Amy has a similar situation for Father Peyton Center and museum inquiries. My plan is to catalog frequently asked questions and answers from both, then train the chatbot on that content. The social media side uses existing Sprout Social capabilities we have not activated yet. This also reduces the gap created by not having a dedicated PR person to manage incoming messages across all 46 accounts.
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. HubSpot CRM Data Cleaning -->
+  <div class="board-card" data-priority="medium" data-status="in-progress">
+    <div class="board-header">
+      <span class="board-name">EMMANUEL: HubSpot CRM Data Cleaning</span>
+      <div class="board-badges">
+        <span class="badge badge-medium">Medium</span>
+        <span class="badge badge-in-progress">In Progress</span>
+        <button class="copy-btn" onclick="copyBoard(this)">Copy Board Name</button>
+      </div>
+    </div>
+    <div class="board-body">
+      <h4>Board Description (paste into Infinity)</h4>
+      <p class="desc-text">I am running a systematic cleanup of duplicate contacts and data quality issues in HCFM's HubSpot CRM. Contacts created from different events with different email addresses are being reviewed and merged. I am also correcting name formatting, location data, and other fields that trigger system errors or distort reporting.</p>
+
+      <h4>Collaborators</h4>
+      <div class="collaborators">
+        <span class="collab-tag owner-tag">Owner: Emmanuel Epau</span>
+        <span class="collab-tag">Luz</span>
+        <span class="collab-tag">IT Department</span>
+      </div>
+
+      <div class="note-box">
+        <strong>Note for Colum</strong>
+        Duplicates accumulate every time someone registers for an event with a different email address. This is not a one-time cleanup; it needs a recurring process to keep the CRM accurate. Luz and I met and she walked me through her approach.
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. Broken Mary Campaign Monitoring -->
+  <div class="board-card" data-priority="medium" data-status="ongoing">
+    <div class="board-header">
+      <span class="board-name">EMMANUEL: Broken Mary Campaign Monitoring</span>
+      <div class="board-badges">
+        <span class="badge badge-medium">Medium</span>
+        <span class="badge badge-ongoing">Ongoing</span>
+        <button class="copy-btn" onclick="copyBoard(this)">Copy Board Name</button>
+      </div>
+    </div>
+    <div class="board-body">
+      <h4>Board Description (paste into Infinity)</h4>
+      <p class="desc-text">Monitoring the Broken Mary Lent campaign on Facebook. I delivered the initial data analysis and verification report to Megan. I retain access to the Facebook page and continue to observe performance metrics, ready to flag anything significant.</p>
+
+      <h4>Collaborators</h4>
+      <div class="collaborators">
+        <span class="collab-tag owner-tag">Owner: Emmanuel Epau</span>
+        <span class="collab-tag">Megan</span>
+      </div>
+
+      <div class="note-box">
+        <strong>Note for Colum</strong>
+        Initial analysis report was delivered to Megan. Currently in observation mode. The campaign is still live and I still have page access. Will produce an updated report if the data warrants it.
+      </div>
+    </div>
+  </div>
+
+  <!-- 9. PRAYED App -->
+  <div class="board-card" data-priority="high" data-status="in-progress">
+    <div class="board-header">
+      <span class="board-name">COLUM: PRAYED App (A World At Prayer)</span>
+      <div class="board-badges">
+        <span class="badge badge-high">High</span>
+        <span class="badge badge-in-progress">In Progress</span>
+        <button class="copy-btn" onclick="copyBoard(this)">Copy Board Name</button>
+      </div>
+    </div>
+    <div class="board-body">
+      <h4>Board Description (paste into Infinity)</h4>
+      <p class="desc-text">Colum's initiative to build a Catholic prayer and community app using Mighty Pro. I am contributing by building a working prototype that visualizes the current feature ideas, including onboarding, Rosary prayer guides, prayer circles, habit tracking, and YouTube-embedded HCFM content. The prototype has gone through seven iterations and incorporates a competitive audit of the top five Catholic apps covering hundreds of data points across product design, content strategy, UX, and community features. Multiple people have reviewed the prototype and provided feedback. It is ready to adjust based on whatever direction leadership decides to take.</p>
+
+      <h4>Collaborators</h4>
+      <div class="collaborators">
+        <span class="collab-tag owner-tag">Owner: Colum Devine</span>
+        <span class="collab-tag">Emmanuel Epau (contributor)</span>
+        <span class="collab-tag">Camille Farey</span>
+        <span class="collab-tag">Marketing Team</span>
+      </div>
+
+      <div class="note-box">
+        <strong>Note for Colum</strong>
+        The prototype exists to make planning conversations easier by giving people something concrete to react to rather than abstract descriptions. Feedback has been collected from several people and is ready to incorporate. The competitive audit covers Hallow and four other leading Catholic apps in detail. All of this is ready to support whatever direction you take with the Mighty Pro development.
+      </div>
+    </div>
+  </div>
+
+  <!-- 10. Peyton Institute Research -->
+  <div class="board-card" data-priority="medium" data-status="in-progress">
+    <div class="board-header">
+      <span class="board-name">LISA: Peyton Institute Research & Data Visualization</span>
+      <div class="board-badges">
+        <span class="badge badge-medium">Medium</span>
+        <span class="badge badge-in-progress">In Progress</span>
+        <button class="copy-btn" onclick="copyBoard(this)">Copy Board Name</button>
+      </div>
+    </div>
+    <div class="board-body">
+      <h4>Board Description (paste into Infinity)</h4>
+      <p class="desc-text">Lisa leads research initiatives for the Peyton Institute. I contribute analytics support, helping to analyze research findings and translate them into visual formats that connect to HCFM's broader marketing and communications work.</p>
+
+      <h4>Collaborators</h4>
+      <div class="collaborators">
+        <span class="collab-tag owner-tag">Owner: Lisa</span>
+        <span class="collab-tag">Emmanuel Epau (contributor)</span>
+      </div>
+
+      <div class="note-box">
+        <strong>Note for Colum</strong>
+        Lisa asked me to participate in analyzing her research outputs and finding ways to make the data useful for marketing. Scope will depend on what her research produces. I presented data visualizations for the 2026 Convocation using a similar approach.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============ FAMILY ROSARY ============ -->
+<div class="workspace-section">
+  <div class="workspace-title">Family Rosary <span class="count">1 board</span></div>
+  <div class="workspace-desc">10 members. Content and channel strategy for the Family Rosary brand.</div>
+
+  <!-- 11. YouTube Channel Strategy -->
+  <div class="board-card" data-priority="high" data-status="in-progress">
+    <div class="board-header">
+      <span class="board-name">EMMANUEL: YouTube Channel Strategy & Restructuring</span>
+      <div class="board-badges">
+        <span class="badge badge-high">High</span>
+        <span class="badge badge-in-progress">In Progress</span>
+        <button class="copy-btn" onclick="copyBoard(this)">Copy Board Name</button>
+      </div>
+    </div>
+    <div class="board-body">
+      <h4>Board Description (paste into Infinity)</h4>
+      <p class="desc-text">I completed a comprehensive audit and restructuring of HCFM's YouTube presence across 4 channels, including content categorization, metadata optimization, and playlist reorganization. The restructuring phase is done. I am now working on channel trailers, cover images, and video thumbnails to improve how the channels look and how content gets discovered.</p>
+
+      <h4>Collaborators</h4>
+      <div class="collaborators">
+        <span class="collab-tag owner-tag">Owner: Emmanuel Epau</span>
+        <span class="collab-tag">Marketing Team</span>
+      </div>
+
+      <div class="note-box">
+        <strong>Note for Colum</strong>
+        The audit and restructuring are complete. The channels have strong content but the visual presentation (trailers, cover images, thumbnails) needs work to help viewers find what they need and keep watching. That is the current focus.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============ CATHOLIC MOM ============ -->
+<div class="workspace-section">
+  <div class="workspace-title">Catholic Mom <span class="count">1 board</span></div>
+  <div class="workspace-desc">10 members. Analytics and resource tracking for CatholicMom.com.</div>
+
+  <!-- 12. Sunday Activities Resource Tracking -->
+  <div class="board-card" data-priority="medium" data-status="in-progress">
+    <div class="board-header">
+      <span class="board-name">EMMANUEL: Sunday Activities Resource Tracking</span>
+      <div class="board-badges">
+        <span class="badge badge-medium">Medium</span>
+        <span class="badge badge-in-progress">In Progress</span>
+        <button class="copy-btn" onclick="copyBoard(this)">Copy Board Name</button>
+      </div>
+    </div>
+    <div class="board-body">
+      <h4>Board Description (paste into Infinity)</h4>
+      <p class="desc-text">I am building accurate tracking for Sunday activity resource downloads on CatholicMom.com. These pages generate consistent weekly traffic through HubSpot, but the current page structure does not capture actual download counts or click-through rates. I am working with Luz to isolate real downloads and identify which parishes are downloading through a form I added to the resource pages.</p>
+
+      <h4>Collaborators</h4>
+      <div class="collaborators">
+        <span class="collab-tag owner-tag">Owner: Emmanuel Epau</span>
+        <span class="collab-tag">Luz</span>
+      </div>
+
+      <div class="note-box">
+        <strong>Note for Colum</strong>
+        We can see the traffic in HubSpot but cannot confirm actual downloads because of how the pages are built. Luz has been working on the page structure and may have a fix. The parish identification form is already live, which will eventually let us see who is downloading and how often they return. CatholicMom drives 85 percent of all HCFM organic search traffic, so any improvement here has outsized impact.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Copy All -->
+<div class="copy-all-section">
+  <p style="margin-bottom: 12px; color: var(--text-muted); font-size: 14px;">Copy all board names and descriptions as plain text for Infinity input.</p>
+  <button class="copy-all-btn" onclick="copyAll()">Copy All Projects</button>
+</div>
+
+<div class="footer">
+  Emmanuel Epau | Holy Cross Family Ministries | Generated March 2026
+</div>
+
+<script>
+function copyBoard(btn) {
+  const card = btn.closest('.board-card');
+  const name = card.querySelector('.board-name').textContent.trim();
+  const desc = card.querySelector('.desc-text').textContent.trim();
+  const collabs = Array.from(card.querySelectorAll('.collab-tag')).map(t => t.textContent.trim()).join(', ');
+  const note = card.querySelector('.note-box') ? card.querySelector('.note-box').textContent.replace('Note for Colum', '').trim() : '';
+
+  let text = name + '\n\n';
+  text += 'Description:\n' + desc + '\n\n';
+  text += 'Collaborators: ' + collabs + '\n';
+  if (note) text += '\nNote: ' + note;
+
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy Board Name'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+function copyAll() {
+  const cards = document.querySelectorAll('.board-card');
+  let sections = {};
+  cards.forEach(card => {
+    const ws = card.closest('.workspace-section');
+    const wsName = ws.querySelector('.workspace-title').textContent.replace(/\d+ board(s)?/, '').trim();
+    if (!sections[wsName]) sections[wsName] = [];
+
+    const name = card.querySelector('.board-name').textContent.trim();
+    const desc = card.querySelector('.desc-text').textContent.trim();
+    const collabs = Array.from(card.querySelectorAll('.collab-tag')).map(t => t.textContent.trim()).join(', ');
+    const note = card.querySelector('.note-box') ? card.querySelector('.note-box').textContent.replace('Note for Colum', '').trim() : '';
+
+    let entry = name + '\nDescription: ' + desc + '\nCollaborators: ' + collabs;
+    if (note) entry += '\nNote: ' + note;
+    sections[wsName].push(entry);
+  });
+
+  let fullText = '';
+  for (const [ws, entries] of Object.entries(sections)) {
+    fullText += '=== ' + ws + ' ===\n\n';
+    fullText += entries.join('\n\n---\n\n');
+    fullText += '\n\n';
+  }
+
+  const btn = document.querySelector('.copy-all-btn');
+  navigator.clipboard.writeText(fullText.trim()).then(() => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => { btn.textContent = 'Copy All Projects'; }, 2000);
+  });
+}
+
+function filterCards(filter) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+
+  document.querySelectorAll('.board-card').forEach(card => {
+    if (filter === 'all') {
+      card.style.display = '';
+      return;
+    }
+    const priority = card.dataset.priority;
+    const status = card.dataset.status;
+    const match = (priority === filter || status === filter);
+    card.style.display = match ? '' : 'none';
+  });
+
+  // Show/hide workspace sections if all cards hidden
+  document.querySelectorAll('.workspace-section').forEach(ws => {
+    const visible = ws.querySelectorAll('.board-card:not([style*="display: none"])');
+    ws.style.display = visible.length > 0 ? '' : 'none';
+  });
+}
+</script>
+
+</body>
+</html>
